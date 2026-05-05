@@ -1,0 +1,90 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+export default function VATCalculator() {
+  const [amount, setAmount] = useState("");
+  const [vatRate, setVatRate] = useState(10);
+  const [result, setResult] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const calcForward = () => {
+    const base = parseFloat(amount);
+    const vat = base * vatRate / 100;
+    setResult({
+      type: "Xuôi",
+      base,
+      vat,
+      total: base + vat
+    });
+    setCopied(false);
+  };
+
+  const calcReverse = () => {
+    const total = parseFloat(amount);
+    const base = total / (1 + vatRate / 100);
+    const vat = total - base;
+    setResult({
+      type: "Ngược",
+      base,
+      vat,
+      total
+    });
+    setCopied(false);
+  };
+
+  const copyResult = () => {
+    if (!result) return;
+    const text = `Chế độ: ${result.type}
+Giá chưa VAT: ${result.base.toLocaleString()} VND
+VAT: ${result.vat.toLocaleString()} VND
+Tổng tiền: ${result.total.toLocaleString()} VND`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+  };
+
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <Card className="w-full max-w-md rounded-2xl shadow-lg">
+        <CardContent className="p-6 space-y-4">
+          <h1 className="text-xl font-semibold text-center">Tính Thuế VAT Ngược & Xuôi</h1>
+
+          <Input
+            placeholder="Nhập số tiền (VND)"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+
+          <Input
+            type="number"
+            placeholder="Thuế suất VAT (%)"
+            value={vatRate}
+            onChange={(e) => setVatRate(e.target.value)}
+          />
+
+          <div className="flex gap-2">
+            <Button className="flex-1" onClick={calcForward}>Tính Xuôi</Button>
+            <Button className="flex-1" variant="outline" onClick={calcReverse}>Tính Ngược</Button>
+          </div>
+
+          {result && (
+            <div className="mt-4 space-y-2 text-sm">
+              <div className="space-y-1">
+                <p><strong>Chế độ:</strong> {result.type}</p>
+                <p><strong>Giá chưa VAT:</strong> {result.base.toLocaleString()} VND</p>
+                <p><strong>VAT:</strong> {result.vat.toLocaleString()} VND</p>
+                <p><strong>Tổng tiền:</strong> {result.total.toLocaleString()} VND</p>
+              </div>
+
+
+              <Button size="sm" className="w-full" variant="secondary" onClick={copyResult}>
+                {copied ? "✅ Đã copy kết quả" : "📋 Copy kết quả"}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
