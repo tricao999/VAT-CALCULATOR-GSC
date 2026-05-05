@@ -1,92 +1,193 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tính Thuế VAT Ngược & Xuôi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #f4f6f8;
+      color: #1f2937;
+    }
 
-export default function VATCalculator() {
-  const [amount, setAmount] = useState("");
-  const [vatRate, setVatRate] = useState(10);
-  const [result, setResult] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const calcForward = () => {
-    const base = parseFloat(amount);
-    const vat = base * vatRate / 100;
-    setResult({
-      type: "Xuôi",
-      base,
-      vat,
-      total: base + vat
-    });
-    setCopied(false);
-  };
+    .container {
+      max-width: 420px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
 
-  const calcReverse = () => {
-    const total = parseFloat(amount);
-    const base = total / (1 + vatRate / 100);
-    const vat = total - base;
-    setResult({
-      type: "Ngược",
-      base,
-      vat,
-      total
-    });
-    setCopied(false);
-  };
+    h1 {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
 
-  const copyResult = () => {
-    if (!result) return;
-    const text = `Chế độ: ${result.type}
-Giá chưa VAT: ${result.base.toLocaleString()} VND
-VAT: ${result.vat.toLocaleString()} VND
-Tổng tiền: ${result.total.toLocaleString()} VND`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-  };
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
 
+    input {
+      width: 100%;
+      padding: 9px 10px;
+      margin-bottom: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+    }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Card className="w-full max-w-md rounded-2xl shadow-lg">
-        <CardContent className="p-6 space-y-4">
-          <h1 className="text-xl font-semibold text-center">Tính Thuế VAT Ngược & Xuôi</h1>
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
 
-          <Input
-            placeholder="Nhập số tiền (VND)"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+    button {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+    }
 
-          <Input
-            type="number"
-            placeholder="Thuế suất VAT (%)"
-            value={vatRate}
-            onChange={(e) => setVatRate(e.target.value)}
-          />
+    .btn-main {
+      background-color: #2563eb;
+      color: white;
+    }
 
-          <div className="flex gap-2">
-            <Button className="flex-1" onClick={calcForward}>Tính Xuôi</Button>
-            <Button className="flex-1" variant="outline" onClick={calcReverse}>Tính Ngược</Button>
-          </div>
+    .btn-outline {
+      background-color: #ffffff;
+      border: 1px solid #2563eb;
+      color: #2563eb;
+    }
 
-          {result && (
-            <div className="mt-4 space-y-2 text-sm">
-              <div className="space-y-1">
-                <p><strong>Chế độ:</strong> {result.type}</p>
-                <p><strong>Giá chưa VAT:</strong> {result.base.toLocaleString()} VND</p>
-                <p><strong>VAT:</strong> {result.vat.toLocaleString()} VND</p>
-                <p><strong>Tổng tiền:</strong> {result.total.toLocaleString()} VND</p>
-              </div>
+    .result-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
 
+    .result-box strong {
+      display: inline-block;
+      width: 120px;
+    }
 
-              <Button size="sm" className="w-full" variant="secondary" onClick={copyResult}>
-                {copied ? "✅ Đã copy kết quả" : "📋 Copy kết quả"}
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+    .copy-btn {
+      margin-top: 10px;
+      width: 100%;
+      background-color: #e5e7eb;
+      color: #111827;
+    }
+
+    .copied {
+      text-align: center;
+      font-size: 13px;
+      color: #059669;
+      margin-top: 6px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>TÍNH THUẾ VAT (NGƯỢC & XUÔI)</h1>
+
+    <label>Số tiền</label>
+    <input id="amount" placeholder="Ví dụ: 1000000" />
+
+    <label>Thuế suất VAT (%)</label>
+    <input id="vatRate" type="number" value="10" />
+
+    <div class="buttons">
+      <button class="btn-main" onclick="calcForward()">Tính xuôi</button>
+      <button class="btn-outline" onclick="calcReverse()">Tính ngược</button>
     </div>
-<!-- redeploy -->
 
-  );
-}
+    <div id="result" class="result-box" style="display:none;"></div>
+
+    <button class="copy-btn" onclick="copyResult()" id="copyBtn" style="display:none;">
+      📋 Copy kết quả
+    </button>
+
+    <div id="copied" class="copied"></div>
+
+    <footer>
+      Web tính VAT – dùng cho kế toán & kinh doanh
+    </footer>
+  </div>
+
+<script>
+  let lastText = "";
+
+  function f(n) {
+    return n.toLocaleString("vi-VN") + " VND";
+  }
+
+  function showResult(html, text) {
+    document.getElementById("result").innerHTML = html;
+    document.getElementById("result").style.display = "block";
+    document.getElementById("copyBtn").style.display = "block";
+    document.getElementById("copied").innerText = "";
+    lastText = text;
+  }
+
+  function calcForward() {
+    const base = parseFloat(amount.value);
+    const rate = parseFloat(vatRate.value);
+    if (isNaN(base) || isNaN(rate)) return;
+
+    const vat = base * rate / 100;
+    const total = base + vat;
+
+    showResult(
+      `<div><strong>Giá chưa VAT:</strong> ${f(base)}</div>
+       <div><strong>VAT:</strong> ${f(vat)}</div>
+       <div><strong>Tổng tiền:</strong> ${f(total)}</div>`,
+      `TÍNH XUÔI\nGiá chưa VAT: ${f(base)}\nVAT: ${f(vat)}\nTổng tiền: ${f(total)}`
+    );
+  }
+
+  function calcReverse() {
+    const total = parseFloat(amount.value);
+    const rate = parseFloat(vatRate.value);
+    if (isNaN(total) || isNaN(rate)) return;
+
+    const base = total / (1 + rate / 100);
+    const vat = total - base;
+
+    showResult(
+      `<div><strong>Tổng tiền:</strong> ${f(total)}</div>
+       <div><strong>VAT:</strong> ${f(vat)}</div>
+       <div><strong>Giá chưa VAT:</strong> ${f(base)}</div>`,
+      `TÍNH NGƯỢC\nGiá chưa VAT: ${f(base)}\nVAT: ${f(vat)}\nTổng tiền: ${f(total)}`
+    );
+  }
+
+  function copyResult() {
+    navigator.clipboard.writeText(lastText);
+    document.getElementById("copied").innerText = "✅ Đã copy kết quả";
+  }
+</script>
+
+</body>
+</html>
