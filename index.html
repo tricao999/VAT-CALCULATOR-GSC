@@ -139,9 +139,9 @@
 <script>
   let lastText = "";
 
-  /* ✅ DÙNG DẤU PHẨY , ĐỂ ĐẾM SỐ */
+  /* ✅ LÀM TRÒN SỐ NGUYÊN + DÙNG DẤU PHẨY , */
   function f(n) {
-    return n.toLocaleString("en-US") + " VND";
+    return Math.round(n).toLocaleString("en-US") + " VND";
   }
 
   function showResult(html, text) {
@@ -198,3 +198,4 @@ Tổng tiền: ${f(total)}`
 
 </body>
 </html>
+``
