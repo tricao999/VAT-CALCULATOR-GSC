@@ -82,7 +82,7 @@
 
     .result-box strong {
       display: inline-block;
-      width: 120px;
+      width: 130px;
     }
 
     .copy-btn {
@@ -113,7 +113,7 @@
     <h1>TÍNH THUẾ VAT (NGƯỢC & XUÔI)</h1>
 
     <label>Số tiền</label>
-    <input id="amount" placeholder="Ví dụ: 1000000" />
+    <input id="amount" placeholder="Ví dụ: 10000" />
 
     <label>Thuế suất VAT (%)</label>
     <input id="vatRate" type="number" value="10" />
@@ -132,16 +132,16 @@
     <div id="copied" class="copied"></div>
 
     <footer>
-      Web tính VAT – dùng cho kế toán & kinh doanh
+      Web tính VAT – gọn nhẹ cho kế toán
     </footer>
   </div>
 
 <script>
   let lastText = "";
 
- function f(n) {
-  return n.toLocaleString("en-US") + " VND";
-}
+  /* ✅ DÙNG DẤU PHẨY , ĐỂ ĐẾM SỐ */
+  function f(n) {
+    return n.toLocaleString("en-US") + " VND";
   }
 
   function showResult(html, text) {
@@ -164,7 +164,10 @@
       `<div><strong>Giá chưa VAT:</strong> ${f(base)}</div>
        <div><strong>VAT:</strong> ${f(vat)}</div>
        <div><strong>Tổng tiền:</strong> ${f(total)}</div>`,
-      `TÍNH XUÔI\nGiá chưa VAT: ${f(base)}\nVAT: ${f(vat)}\nTổng tiền: ${f(total)}`
+      `TÍNH XUÔI
+Giá chưa VAT: ${f(base)}
+VAT: ${f(vat)}
+Tổng tiền: ${f(total)}`
     );
   }
 
@@ -180,7 +183,10 @@
       `<div><strong>Tổng tiền:</strong> ${f(total)}</div>
        <div><strong>VAT:</strong> ${f(vat)}</div>
        <div><strong>Giá chưa VAT:</strong> ${f(base)}</div>`,
-      `TÍNH NGƯỢC\nGiá chưa VAT: ${f(base)}\nVAT: ${f(vat)}\nTổng tiền: ${f(total)}`
+      `TÍNH NGƯỢC
+Giá chưa VAT: ${f(base)}
+VAT: ${f(vat)}
+Tổng tiền: ${f(total)}`
     );
   }
 
